@@ -46,7 +46,14 @@ public class MusicGroupsServiceWapi : IMusicGroupsService
     {
         string uri = $"musicgroups/readitem?id={id}&flat={flat}";
 
-        throw new NotImplementedException();
+        HttpResponseMessage response = await _httpClient.GetAsync(uri);
+
+        await response.EnsureSuccessStatusMessage();
+
+        string s = await response.Content.ReadAsStringAsync();
+        var resp = JsonConvert.DeserializeObject<ResponseItemDto<IMusicGroup>>(s, _jsonSettings);
+        return resp;
+        //throw new NotImplementedException();
     }
     public async Task<ResponseItemDto<IMusicGroup>> DeleteMusicGroupAsync(Guid id)
     {
