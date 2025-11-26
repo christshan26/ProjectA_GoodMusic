@@ -47,25 +47,57 @@ public class AlbumsServiceWapi : IAlbumsService
     {
         string uri = $"albums/readitem?id={id}&flat={flat}";
 
-        throw new NotImplementedException();
+        HttpResponseMessage response = await _httpClient.GetAsync(uri);
+
+        await response.EnsureSuccessStatusMessage();
+
+        string s = await response.Content.ReadAsStringAsync();
+        var resp = JsonConvert.DeserializeObject<ResponseItemDto<IAlbum>>(s, _jsonSettings);
+        return resp;
     }
     public async Task<ResponseItemDto<IAlbum>> DeleteAlbumAsync(Guid id)
     {
         string uri = $"albums/deleteitem/{id}";
 
-        throw new NotImplementedException();
+        HttpResponseMessage response = await _httpClient.DeleteAsync(uri);
+
+        await response.EnsureSuccessStatusMessage();
+
+        string s = await response.Content.ReadAsStringAsync();
+        var resp = JsonConvert.DeserializeObject<ResponseItemDto<IAlbum>>(s, _jsonSettings);
+        return resp;
     }
     public async Task<ResponseItemDto<IAlbum>> UpdateAlbumAsync(AlbumCUdto item)
     {
         string uri = $"albums/updateitem/{item.AlbumId}";
+        string json = JsonConvert.SerializeObject(item);
 
-        throw new NotImplementedException();
+        HttpResponseMessage response = await _httpClient.PutAsync(uri, new StringContent(json, System.Text.Encoding.UTF8, "application/json"));
+
+        await response.EnsureSuccessStatusMessage();
+
+        string s = await response.Content.ReadAsStringAsync();
+        var resp = JsonConvert.DeserializeObject<ResponseItemDto<IAlbum>>(s, _jsonSettings);
+        return resp;
     }
     public async Task<ResponseItemDto<IAlbum>> CreateAlbumAsync(AlbumCUdto item)
     {
-        string uri = $"albums/createitem";
+        // If statement needed to avoid zero copies throwing an exception
+        if (item.CopiesSold == 0)
+        {
+            item.CopiesSold = Random.Shared.Next(1_000, 1_000_000);
+        }
 
-        throw new NotImplementedException();
+        string uri = $"albums/createitem";
+        string json = JsonConvert.SerializeObject(item);
+
+        HttpResponseMessage response = await _httpClient.PostAsync(uri, new StringContent(json, System.Text.Encoding.UTF8, "application/json"));
+
+        await response.EnsureSuccessStatusMessage();
+
+        string s = await response.Content.ReadAsStringAsync();
+        var resp = JsonConvert.DeserializeObject<ResponseItemDto<IAlbum>>(s, _jsonSettings);
+        return resp;
     }
 }
 
