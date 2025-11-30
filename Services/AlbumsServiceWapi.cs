@@ -82,7 +82,8 @@ public class AlbumsServiceWapi : IAlbumsService
     }
     public async Task<ResponseItemDto<IAlbum>> CreateAlbumAsync(AlbumCUdto item)
     {
-        // If statement needed to avoid zero CopiesSold throwing an exception
+        
+        // If statement needed to avoid zero CopiesSold throwing an exception in EnsureValidity 
         if (item.CopiesSold == 0)
         {
             item.CopiesSold = Random.Shared.Next(1_000, 1_000_000);
